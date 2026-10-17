@@ -43,11 +43,17 @@
   color-scheme: dark;
 }
 
-/* Shared frosted-glass look for the sticky header and fixed footer. */
+/* Frosted-glass look for the sticky header. */
 .glass {
   background: var(--glass-bg);
   backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
+}
+/* Older Safari only knows the prefixed property. It lives in its own block
+   because the production CSS minifier merges the two into one otherwise. */
+@supports (-webkit-backdrop-filter: none) {
+  .glass {
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+  }
 }
 
 *,
