@@ -1,0 +1,25 @@
+{
+  "name": "swingcraft4j-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "sync:projects": "node scripts/update-projects.mjs",
+    "sync:sponsors": "node scripts/update-sponsors.mjs"
+  },
+  "dependencies": {
+    "astro": "^7.4.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^24.19.2",
+    "typescript": "^6.0.0"
+  }
+}

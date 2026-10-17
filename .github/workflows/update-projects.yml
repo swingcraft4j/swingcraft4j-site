@@ -1,0 +1,57 @@
+name: Update projects
+
+on:
+  schedule:
+    - cron: '30 0 * * *' # every day at 00:30 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write # commit the updated projects.json
+  actions: write # start the deploy workflow
+
+concurrency:
+  group: update-projects
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - name: Fetch repositories from GitHub
+        run: node scripts/update-projects.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          # Set a repository variable to use a different organization.
+          PROJECTS_ORG: ${{ vars.PROJECTS_ORG || 'swingcraft4j' }}
+          # Repos to leave out (default in the script: swingcraft4j-site).
+          PROJECTS_IGNORE: ${{ vars.PROJECTS_IGNORE }}
+
+      - name: Commit changes
+        id: commit
+        run: |
+          if git diff --quiet -- src/data/projects.json; then
+            echo "No project changes."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/projects.json
+          git commit -m "chore: update projects"
+          git pull --rebase
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      # Pushes made with GITHUB_TOKEN don't trigger other workflows,
+      # so start the deploy explicitly when the list changed.
+      - name: Redeploy site
+        if: steps.commit.outputs.changed == 'true'
+        run: gh workflow run deploy.yml --ref "${{ github.ref_name }}"
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "swingcraft4j/swingcraft4j",
+    "name": "swingcraft4j",
+    "description": "Modern, animated Swing components for Java desktop applications, built on the FlatLaf look and feel.",
+    "url": "https://github.com/swingcraft4j/swingcraft4j",
+    "homepage": "https://www.swingcraft4j.com",
+    "language": "Java",
+    "license": "MIT",
+    "topics": ["desktop", "flatlaf", "java", "java-swing", "swing"],
+    "stars": 3,
+    "forks": 0,
+    "archived": false,
+    "pushedAt": "2026-10-15T05:47:37Z"
+  },
+  {
+    "id": "swingcraft4j/swingcraft-editor",
+    "name": "swingcraft-editor",
+    "description": "A source code viewer and editor for Java Swing desktop applications, with syntax highlighting and code completion, and a preview of Markdown",
+    "url": "https://github.com/swingcraft4j/swingcraft-editor",
+    "language": "Java",
+    "license": "MIT",
+    "topics": ["code-completion", "code-editor", "java", "java-swing", "swing", "swing-component", "syntax-highlighting", "text-editor"],
+    "stars": 2,
+    "forks": 1,
+    "archived": false,
+    "pushedAt": "2026-10-14T05:24:41Z"
+  }
+]

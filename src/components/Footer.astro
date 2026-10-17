@@ -1,0 +1,30 @@
+---
+import { site } from '../lib/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <p>© {year} {site.title}. Open source on <a href={site.githubUrl} rel="noopener">GitHub</a>.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 0.8125rem;
+  }
+  p {
+    margin: 0;
+    padding-block: 1rem;
+  }
+  a {
+    color: inherit;
+  }
+  a:hover {
+    color: var(--accent);
+  }
+</style>

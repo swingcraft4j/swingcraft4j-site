@@ -1,0 +1,13 @@
+{
+  "title": "SwingCraft4J",
+  "tagline": "Modern components for Java Swing",
+  "description": "SwingCraft4J is a toolkit of modern, themeable components for building desktop apps with Java Swing.",
+  "maintainer": "DJ-Raven",
+  "githubUrl": "https://github.com/swingcraft4j",
+  "sponsorsUrl": "https://github.com/sponsors/DJ-Raven",
+  "nav": [
+    { "label": "Home", "href": "/" },
+    { "label": "Projects", "href": "/projects" },
+    { "label": "Sponsors", "href": "/sponsors" }
+  ]
+}

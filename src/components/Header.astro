@@ -1,0 +1,98 @@
+---
+import { site, url } from '../lib/site';
+import ThemeToggle from './ThemeToggle.astro';
+import Logo from './Logo.astro';
+
+const normalize = (path: string) => path.replace(/\/$/, '') || '/';
+const current = normalize(Astro.url.pathname);
+const home = normalize(url('/'));
+const isActive = (href: string) => {
+  const target = normalize(url(href));
+  // Home only matches exactly; other links also match their sub-pages.
+  return target === home ? current === home : current === target || current.startsWith(`${target}/`);
+};
+---
+
+<header class="site-header glass">
+  <div class="container header-inner">
+    <a class="brand" href={url('/')}>
+      <Logo size={26} class="brand-logo" />
+      {site.title}
+    </a>
+    <nav aria-label="Main">
+      {
+        site.nav.map((item) => (
+          <a href={url(item.href)} aria-current={isActive(item.href) ? 'page' : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
+      <a href={site.githubUrl} rel="noopener">GitHub</a>
+    </nav>
+    <div class="toggle">
+      <ThemeToggle />
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.1rem;
+    min-height: 3.5rem;
+    padding-block: 0.5rem;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .brand :global(.brand-logo) {
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.1rem;
+    margin-left: auto;
+  }
+  .toggle {
+    display: flex;
+  }
+  nav a {
+    color: var(--muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  nav a:hover,
+  nav a[aria-current='page'] {
+    color: var(--accent);
+  }
+
+  /* Phones: logo and theme button on the first row, links on the second. */
+  @media (max-width: 600px) {
+    .toggle {
+      order: 2;
+      margin-left: auto;
+    }
+    nav {
+      order: 3;
+      flex-basis: 100%;
+      margin-left: 0;
+    }
+  }
+</style>

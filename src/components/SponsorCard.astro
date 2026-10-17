@@ -1,0 +1,204 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  sponsor: CollectionEntry<'sponsors'>;
+  size?: 'large' | 'small';
+}
+
+const { sponsor, size = 'large' } = Astro.props;
+const { login, name, type, avatarUrl, url, status, since, until } = sponsor.data;
+
+const formatMonth = (date: Date) => date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', timeZone: 'UTC' });
+const period =
+  since && until
+    ? `${formatMonth(since)} – ${formatMonth(until)}`
+    : since && status === 'current'
+      ? `Since ${formatMonth(since)}`
+      : undefined;
+const isOrg = type === 'Organization';
+const displayName = name && name !== login ? name : undefined;
+const avatarSize = size === 'large' ? 64 : 44;
+---
+
+{
+  size === 'large' ? (
+    <li class="sponsor large">
+      <a href={url} rel="noopener">
+        <span class:list={['avatar-ring', { org: isOrg }]}>
+          <img src={avatarUrl} alt="" width={avatarSize} height={avatarSize} loading="lazy" decoding="async" />
+        </span>
+        <span class="login">@{login}</span>
+      </a>
+      {displayName && <span class="name">{displayName}</span>}
+      <span class="meta">
+        {isOrg && <span class="tag">Organization</span>}
+        {period && <span>{period}</span>}
+      </span>
+    </li>
+  ) : (
+    <li class="sponsor small">
+      <a href={url} rel="noopener" title={displayName ? `${displayName} (@${login})` : `@${login}`}>
+        <img
+          class:list={{ org: isOrg }}
+          src={avatarUrl}
+          alt=""
+          width={avatarSize}
+          height={avatarSize}
+          loading="lazy"
+          decoding="async"
+        />
+        <span class="login">@{login}</span>
+      </a>
+    </li>
+  )
+}
+
+<style>
+  .sponsor {
+    min-width: 0;
+  }
+  a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  img {
+    display: block;
+    border-radius: 50%;
+    background: var(--surface);
+  }
+  /* GitHub shows organizations with rounded-square avatars. */
+  img.org,
+  .org img {
+    border-radius: 22%;
+  }
+
+  /* Current sponsors: cards */
+  .large {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 1.25rem 0.75rem 1rem;
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition:
+      transform 0.15s,
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+  .large:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: 0 8px 24px -12px var(--accent);
+  }
+  .large a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    max-width: 100%;
+  }
+  /* Makes the whole card clickable while keeping a single link. */
+  .large a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .large a:focus-visible {
+    outline: none;
+  }
+  .large:has(a:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .avatar-ring {
+    padding: 3px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--sponsor));
+  }
+  .avatar-ring.org {
+    border-radius: 26%;
+  }
+  .avatar-ring img {
+    border: 3px solid var(--surface);
+  }
+  .large .login {
+    font-weight: 600;
+    font-size: 0.9rem;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .large:hover .login {
+    color: var(--accent);
+  }
+  .name {
+    color: var(--text);
+    font-size: 0.8125rem;
+    margin-top: -0.3rem;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 0.5rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+  .tag {
+    padding: 0 0.45rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+  }
+
+  /* Past sponsors: avatar wall */
+  .small a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    text-align: center;
+  }
+  .small img {
+    filter: grayscale(0.6);
+    opacity: 0.85;
+    transition:
+      filter 0.2s,
+      opacity 0.2s,
+      transform 0.2s;
+  }
+  .small a:hover img,
+  .small a:focus-visible img {
+    filter: none;
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  .small .login {
+    font-size: 0.75rem;
+    color: var(--muted);
+    max-width: 100%;
+    /* Wrap long usernames (at hyphens where possible) instead of cutting them off. */
+    overflow-wrap: anywhere;
+    line-height: 1.3;
+  }
+  .small a:hover .login {
+    color: var(--accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .large,
+    .small img {
+      transition: none;
+    }
+    .large:hover,
+    .small a:hover img {
+      transform: none;
+    }
+  }
+</style>

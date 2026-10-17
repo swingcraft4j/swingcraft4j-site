@@ -1,0 +1,122 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SponsorCard from '../components/SponsorCard.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../lib/site';
+import { getSponsors } from '../lib/sponsors';
+import { plural } from '../lib/format';
+
+// Newest sponsors first (see src/lib/sponsors.ts).
+const { current, past } = await getSponsors();
+
+---
+
+<BaseLayout title="Sponsors" description={`The people and organizations who support ${site.maintainer}'s open source work, including ${site.title}.`}>
+  <header class="page-header">
+    <h1>Sponsors</h1>
+    <p class="lead">
+      Thank you to the people and organizations who support {site.maintainer}'s open source work, including {site.title}.
+    </p>
+  </header>
+
+  <section class="section">
+    <header class="section-header">
+      <h2>Current sponsors</h2>
+      <span class="count">{plural(current.length, 'sponsor')}</span>
+    </header>
+    {
+      current.length > 0 ? (
+        <ul class="current-grid">
+          {current.map((sponsor) => (
+            <SponsorCard sponsor={sponsor} />
+          ))}
+        </ul>
+      ) : (
+        <p class="muted">No current sponsors yet. You could be the first!</p>
+      )
+    }
+  </section>
+
+  {
+    past.length > 0 && (
+      <section class="section">
+        <header class="section-header">
+          <h2>Past sponsors</h2>
+          <span class="count">{plural(past.length, 'sponsor')}</span>
+        </header>
+        <p class="note">Supporters of {site.maintainer}'s open source work, some from before {site.title} began.</p>
+        <ul class="past-grid">
+          {past.map((sponsor) => (
+            <SponsorCard sponsor={sponsor} size="small" />
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    site.sponsorsUrl && (
+      <section class="section cta">
+        <div class="cta-text">
+          <h2>Support {site.title}</h2>
+          <p>Sponsoring helps keep the project maintained and free for everyone. Your avatar will appear on this page.</p>
+        </div>
+        <a class="button sponsor" href={site.sponsorsUrl} rel="noopener">
+          <Icon name="heart" />
+          Become a sponsor
+        </a>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .current-grid,
+  .past-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+  }
+  .current-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
+    gap: 0.75rem;
+  }
+  .past-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1.25rem 0.75rem;
+  }
+
+  .note {
+    margin: -0.4rem 0 1rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background:
+      radial-gradient(circle at right, color-mix(in srgb, var(--sponsor) 12%, transparent), transparent 60%),
+      var(--surface);
+  }
+  .cta-text {
+    flex: 1 1 18rem;
+  }
+  .cta h2 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  .cta p {
+    margin: 0.25rem 0 0;
+    max-width: 34rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+</style>

@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { site } from '../lib/site';
+import { getProjects } from '../lib/projects';
+import { plural } from '../lib/format';
+
+const projects = await getProjects();
+
+const totalStars = projects.reduce((sum, project) => sum + project.data.stars, 0);
+---
+
+<BaseLayout title="Projects" description={`Open source projects from the ${site.title} organization.`}>
+  <header class="page-header">
+    <h1>Open source projects</h1>
+    <p class="lead">
+      Everything we build is free and open source under the <a href={site.githubUrl} rel="noopener"
+        >{site.title} organization on GitHub</a
+      >.
+    </p>
+  </header>
+
+  <section class="section">
+    <header class="section-header">
+      <h2>All projects</h2>
+      <span class="count">{plural(projects.length, 'project')} · {plural(totalStars, 'star')}</span>
+    </header>
+    {
+      projects.length > 0 ? (
+        <div class="project-grid">
+          {projects.map((project) => (
+            <ProjectCard project={project} />
+          ))}
+        </div>
+      ) : (
+        <p class="muted">No projects yet.</p>
+      )
+    }
+  </section>
+</BaseLayout>
+

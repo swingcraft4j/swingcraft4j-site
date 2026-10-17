@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Logo from '../components/Logo.astro';
+import { url } from '../lib/site';
+---
+
+<BaseLayout title="Page not found" noindex>
+  <section class="not-found">
+    <p class="code" aria-hidden="true">
+      <span>4</span>
+      <Logo size={88} class="swing" />
+      <span>4</span>
+    </p>
+    <h1>Page not found</h1>
+    <p class="lead">The page you're looking for doesn't exist or has moved.</p>
+    <p class="exception"><code>java.lang.PageNotFoundException</code></p>
+    <div class="actions">
+      <a class="button" href={url('/')}>Go home</a>
+      <a class="button secondary" href={url('/projects')}>Browse projects</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Let the section fill the space between header and footer, so it sits centered. */
+  :global(main:has(> .not-found)) {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0;
+  }
+  .not-found {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-block: 2rem;
+    text-align: center;
+  }
+  /* "404" with the logo standing in for the 0. */
+  .code {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 1.5rem;
+    color: var(--text);
+    font-size: 6rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+  .code :global(.swing) {
+    color: var(--accent);
+    /* Swings from the top point of the hexagon, like the S in its frame. */
+    transform-origin: 50% 8%;
+    animation: swing 3s ease-in-out infinite;
+  }
+  @keyframes swing {
+    0%,
+    100% {
+      transform: rotate(-7deg);
+    }
+    50% {
+      transform: rotate(7deg);
+    }
+  }
+  h1 {
+    margin: 0;
+  }
+  .lead {
+    margin: 0.5rem 0 0;
+    color: var(--muted);
+  }
+  .exception {
+    margin: 1.25rem 0 0;
+  }
+  .exception code {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--muted);
+    font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+    font-size: 0.8125rem;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 1.75rem;
+  }
+
+  @media (max-width: 480px) {
+    .code {
+      font-size: 4.5rem;
+      gap: 0.5rem;
+    }
+    .code :global(.swing) {
+      width: 66px;
+      height: 66px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .code :global(.swing) {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,213 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Icon from '../components/Icon.astro';
+import { site, url } from '../lib/site';
+import { getProjects } from '../lib/projects';
+import { getSponsors } from '../lib/sponsors';
+import { plural } from '../lib/format';
+
+const HOME_PROJECT_LIMIT = 4;
+
+const projects = await getProjects();
+const { all: sponsors, current: currentSponsors, past: pastSponsors } = await getSponsors();
+const pastSponsorCount = pastSponsors.length;
+const totalStars = projects.reduce((sum, project) => sum + project.data.stars, 0);
+---
+
+<BaseLayout>
+  <section class="hero">
+    <h1>{site.title}</h1>
+    <p class="tagline">{site.tagline}</p>
+    <p class="description">{site.description}</p>
+    <div class="actions">
+      <a class="button" href={url('/projects')}>Explore projects</a>
+      <a class="button secondary" href={site.githubUrl} rel="noopener">
+        <Icon name="github" />
+        GitHub
+      </a>
+    </div>
+    <ul class="stats" aria-label="At a glance">
+      <li><strong>{projects.length}</strong> {projects.length === 1 ? 'project' : 'projects'}</li>
+      <li><strong>{totalStars}</strong> GitHub {totalStars === 1 ? 'star' : 'stars'}</li>
+      <li><strong>{sponsors.length}</strong> {sponsors.length === 1 ? 'sponsor' : 'sponsors'}</li>
+    </ul>
+  </section>
+
+  {
+    projects.length > 0 && (
+      <section class="section">
+        <header class="section-header">
+          <h2>Projects</h2>
+          {projects.length > HOME_PROJECT_LIMIT && <a href={url('/projects')}>All projects →</a>}
+        </header>
+        <div class="project-grid">
+          {projects.slice(0, HOME_PROJECT_LIMIT).map((project) => (
+            <ProjectCard project={project} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section sponsors">
+    <div class="sponsors-text">
+      <h2>Supported by</h2>
+      <p class="muted">
+        {
+          pastSponsorCount > 0 && (
+            <>
+              Plus {plural(pastSponsorCount, 'past sponsor')}.{' '}
+            </>
+          )
+        }
+        <a href={url('/sponsors')}>See all sponsors →</a>
+      </p>
+    </div>
+    {
+      currentSponsors.length > 0 ? (
+        <ul class="sponsor-avatars">
+          {currentSponsors.map(({ data }) => (
+            <li>
+              <a href={data.url} rel="noopener" title={data.name ? `${data.name} (@${data.login})` : `@${data.login}`}>
+                <img
+                  class:list={{ org: data.type === 'Organization' }}
+                  src={data.avatarUrl}
+                  alt={`@${data.login}`}
+                  width="44"
+                  height="44"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="muted">No sponsors yet. Be the first!</p>
+      )
+    }
+    {
+      site.sponsorsUrl && (
+        <a class="button sponsor" href={site.sponsorsUrl} rel="noopener">
+          <Icon name="heart" />
+          Become a sponsor
+        </a>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate; /* keeps the glow (z-index: -1) above the page background */
+    padding-block: 3.5rem 1.5rem;
+    text-align: center;
+  }
+  /* Soft glow behind the title. */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0 15% auto;
+    height: 75%;
+    z-index: -1;
+    background: radial-gradient(ellipse at center, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    margin: 0;
+    font-size: clamp(2.1rem, 6vw, 3rem);
+    letter-spacing: -0.025em;
+  }
+  .tagline {
+    margin: 0.35rem 0 0;
+    font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+    font-weight: 600;
+  }
+  .description {
+    max-width: 34rem;
+    margin: 0.6rem auto 0;
+    color: var(--muted);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+  }
+  .stats {
+    list-style: none;
+    padding: 0;
+    margin: 1.75rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem 1.75rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  .stats strong {
+    color: var(--text);
+    font-size: 1rem;
+  }
+
+
+  /* Sponsors band: text, avatars and button on one row, stacking on small screens. */
+  .sponsors {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background:
+      radial-gradient(circle at left, color-mix(in srgb, var(--sponsor) 10%, transparent), transparent 60%),
+      var(--surface);
+  }
+  .sponsors-text {
+    flex: 1 1 14rem;
+  }
+  .sponsors h2 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  .sponsors-text p {
+    margin: 0.2rem 0 0;
+    font-size: 0.875rem;
+  }
+  .sponsor-avatars {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .sponsor-avatars img {
+    display: block;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    transition:
+      transform 0.15s,
+      border-color 0.15s;
+  }
+  .sponsor-avatars img.org {
+    border-radius: 22%;
+  }
+  .sponsor-avatars a:hover img {
+    transform: scale(1.08);
+    border-color: var(--sponsor);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sponsor-avatars img {
+      transition: none;
+    }
+    .sponsor-avatars a:hover img {
+      transform: none;
+    }
+  }
+</style>
