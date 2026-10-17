@@ -46,7 +46,13 @@ async function fetchSponsorships({ token, login, activeOnly }) {
   do {
     const response = await fetch('https://api.github.com/graphql', {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        // Always return the current ID format (U_kgDO…); older accounts otherwise get
+        // legacy IDs (MDQ6…) that don't match IDs looked up elsewhere.
+        'X-Github-Next-Global-ID': '1',
+      },
       body: JSON.stringify({ query: QUERY, variables: { login, activeOnly, cursor } }),
     });
     if (!response.ok) {
@@ -75,18 +81,61 @@ function profileOf(sponsorship) {
   return { id, login, name: name || null, type: __typename, avatarUrl, url };
 }
 
+const earliest = (a, b) => (a && b ? (a < b ? a : b) : a || b);
+const latest = (a, b) => (a && b ? (a > b ? a : b) : a || b);
+const isLegacyId = (id) => id.startsWith('MD'); // old base64 IDs, e.g. "MDQ6VXNlcj…"
+
+/**
+ * Folds entries for the same account (same login, case-insensitive) into one.
+ * Repairs files where one sponsor was stored under two ID formats.
+ */
+export function dedupe(sponsors) {
+  const byLogin = new Map();
+  for (const sponsor of sponsors) {
+    const key = sponsor.login.toLowerCase();
+    const other = byLogin.get(key);
+    if (!other) {
+      byLogin.set(key, { ...sponsor });
+      continue;
+    }
+    // A current entry wins over a past one.
+    const [main, extra] = sponsor.status === 'current' ? [sponsor, other] : [other, sponsor];
+    const merged = {
+      ...extra,
+      ...main,
+      id: isLegacyId(main.id) && !isLegacyId(extra.id) ? extra.id : main.id,
+      since: main.status === 'current' ? (main.since ?? extra.since) : earliest(main.since, extra.since),
+      until: main.status === 'current' ? undefined : latest(main.until, extra.until),
+    };
+    byLogin.set(key, merged);
+  }
+  return [...byLogin.values()];
+}
+
 /**
  * Merges freshly fetched sponsorships into the stored list.
  * Pure function so it can be tested without calling GitHub.
  */
 export function mergeSponsors(existing, active, history, today) {
-  const byId = new Map(existing.map((sponsor) => [sponsor.id, { ...sponsor }]));
+  const byId = new Map(dedupe(existing).map((sponsor) => [sponsor.id, sponsor]));
   const activeIds = new Set();
+
+  // Finds the stored entry for a profile: by ID, or by login if the ID changed
+  // (renamed format or account). Re-keys it under the new ID.
+  const take = (profile) => {
+    let previous = byId.get(profile.id);
+    if (!previous) {
+      const login = profile.login.toLowerCase();
+      previous = [...byId.values()].find((sponsor) => sponsor.login.toLowerCase() === login);
+      if (previous) byId.delete(previous.id);
+    }
+    return previous;
+  };
 
   for (const sponsorship of active) {
     const profile = profileOf(sponsorship);
     activeIds.add(profile.id);
-    const previous = byId.get(profile.id);
+    const previous = take(profile);
     const isReturning = previous?.status !== 'current';
     byId.set(profile.id, {
       ...profile,
@@ -107,17 +156,15 @@ export function mergeSponsors(existing, active, history, today) {
   for (const sponsorship of history) {
     const profile = profileOf(sponsorship);
     if (activeIds.has(profile.id)) continue;
-    const previous = byId.get(profile.id);
+    const previous = take(profile);
     const since = toDay(sponsorship.createdAt);
     if (!previous) {
       byId.set(profile.id, { ...profile, status: 'past', since });
     } else if (previous.status === 'past') {
       // Refresh profile details (renamed account, new avatar), keep the dates.
-      byId.set(profile.id, {
-        ...previous,
-        ...profile,
-        since: previous.since && previous.since < since ? previous.since : since,
-      });
+      byId.set(profile.id, { ...previous, ...profile, since: earliest(previous.since, since) });
+    } else {
+      byId.set(previous.id, previous); // current entry matched by login: put it back unchanged
     }
   }
 

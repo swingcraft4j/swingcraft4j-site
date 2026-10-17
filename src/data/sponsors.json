@@ -1,6 +1,6 @@
 [
   {
-    "id": "MDQ6VXNlcjY1ODY5OTE=",
+    "id": "U_kgDOAGSCbw",
     "login": "lawson89",
     "name": "Richard Lawson",
     "type": "User",
@@ -10,7 +10,7 @@
     "since": "2026-09-30"
   },
   {
-    "id": "MDQ6VXNlcjMxNTA1NTQ=",
+    "id": "U_kgDOADAS2g",
     "login": "samuelsonbrito",
     "name": "Samuelson Brito",
     "type": "User",
@@ -26,27 +26,8 @@
     "type": "User",
     "avatarUrl": "https://avatars.githubusercontent.com/u/58392299?v=4&s=128",
     "url": "https://github.com/guerelgq",
-    "status": "past"
-  },
-  {
-    "id": "MDQ6VXNlcjU4MzkyMjk5",
-    "login": "guerelgq",
-    "name": "Guerel García",
-    "type": "User",
-    "avatarUrl": "https://avatars.githubusercontent.com/u/58392299?s=128&u=340fea2a82837b03b9362e48be9fb6a974cd3241&v=4",
-    "url": "https://github.com/guerelgq",
     "status": "past",
     "since": "2025-01-05"
-  },
-  {
-    "id": "U_kgDOAGSCbw",
-    "login": "lawson89",
-    "name": "Richard Lawson",
-    "type": "User",
-    "avatarUrl": "https://avatars.githubusercontent.com/u/6586991?v=4&s=128",
-    "url": "https://github.com/lawson89",
-    "status": "past",
-    "until": "2026-10-17"
   },
   {
     "id": "U_kgDOABg1PA",
@@ -55,27 +36,8 @@
     "type": "User",
     "avatarUrl": "https://avatars.githubusercontent.com/u/1586492?v=4&s=128",
     "url": "https://github.com/norbert-gaulia",
-    "status": "past"
-  },
-  {
-    "id": "MDQ6VXNlcjE1ODY0OTI=",
-    "login": "norbert-gaulia",
-    "name": "Norbertas Gaulia",
-    "type": "User",
-    "avatarUrl": "https://avatars.githubusercontent.com/u/1586492?s=128&u=3d73628eb0e87bfbe5777b056e5fe1fd435b7e5e&v=4",
-    "url": "https://github.com/norbert-gaulia",
     "status": "past",
     "since": "2024-12-20"
-  },
-  {
-    "id": "U_kgDOADAS2g",
-    "login": "samuelsonbrito",
-    "name": "Samuelson Brito",
-    "type": "User",
-    "avatarUrl": "https://avatars.githubusercontent.com/u/3150554?v=4&s=128",
-    "url": "https://github.com/samuelsonbrito",
-    "status": "past",
-    "until": "2026-10-17"
   },
   {
     "id": "U_kgDOBrTd8g",
