@@ -7,7 +7,13 @@
     "homepage": "https://www.swingcraft4j.com",
     "language": "Java",
     "license": "MIT",
-    "topics": ["desktop", "flatlaf", "java", "java-swing", "swing"],
+    "topics": [
+      "desktop",
+      "flatlaf",
+      "java",
+      "java-swing",
+      "swing"
+    ],
     "stars": 3,
     "forks": 0,
     "archived": false,
@@ -20,10 +26,19 @@
     "url": "https://github.com/swingcraft4j/swingcraft-editor",
     "language": "Java",
     "license": "MIT",
-    "topics": ["code-completion", "code-editor", "java", "java-swing", "swing", "swing-component", "syntax-highlighting", "text-editor"],
+    "topics": [
+      "code-completion",
+      "code-editor",
+      "java",
+      "java-swing",
+      "swing",
+      "swing-component",
+      "syntax-highlighting",
+      "text-editor"
+    ],
     "stars": 2,
     "forks": 1,
     "archived": false,
-    "pushedAt": "2026-10-14T05:24:41Z"
+    "pushedAt": "2026-10-19T09:34:34Z"
   }
 ]
